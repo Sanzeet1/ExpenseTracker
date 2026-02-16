@@ -1,0 +1,562 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>ExpenseTracker Pro</title>
+    <meta
+      name="description"
+      content="A comprehensive expense tracking application"
+    />
+    <meta name="theme-color" content="#6366f1" />
+    <link rel="manifest" href="manifest.json" />
+    <link rel="apple-touch-icon" href="icons/icon-192.png" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Outfit:wght@400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="styles.css" />
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"
+    />
+  </head>
+  <body>
+    <!-- Auth Container -->
+    <div id="auth-container" class="auth-container">
+      <div class="auth-card">
+        <div class="auth-header">
+          <div class="logo">
+            <i class="fas fa-wallet"></i>
+            <span>ExpenseTracker</span>
+          </div>
+          <div class="auth-tabs">
+            <button class="auth-tab active" data-tab="login">Login</button>
+            <button class="auth-tab" data-tab="signup">Signup</button>
+          </div>
+        </div>
+
+        <!-- Login Form -->
+        <form id="login-form" class="auth-form active">
+          <div class="form-group">
+            <label for="login-email">Email</label>
+            <div class="input-wrapper">
+              <i class="fas fa-envelope"></i>
+              <input
+                type="email"
+                id="login-email"
+                placeholder="Enter your email"
+                required
+              />
+            </div>
+          </div>
+          <div class="form-group">
+            <label for="login-password">Password</label>
+            <div class="input-wrapper">
+              <i class="fas fa-lock"></i>
+              <input
+                type="password"
+                id="login-password"
+                placeholder="Enter your password"
+                required
+              />
+              <button type="button" class="toggle-password">
+                <i class="fas fa-eye"></i>
+              </button>
+            </div>
+          </div>
+          <button type="submit" class="btn btn-primary btn-block">
+            <span>Login</span>
+            <i class="fas fa-sign-in-alt"></i>
+          </button>
+        </form>
+
+        <!-- Signup Form -->
+        <form id="signup-form" class="auth-form">
+          <div class="form-group">
+            <label for="signup-name">Full Name</label>
+            <div class="input-wrapper">
+              <i class="fas fa-user"></i>
+              <input
+                type="text"
+                id="signup-name"
+                placeholder="Enter your name"
+                required
+              />
+            </div>
+          </div>
+          <div class="form-group">
+            <label for="signup-email">Email</label>
+            <div class="input-wrapper">
+              <i class="fas fa-envelope"></i>
+              <input
+                type="email"
+                id="signup-email"
+                placeholder="Enter your email"
+                required
+              />
+            </div>
+          </div>
+          <div class="form-group">
+            <label for="signup-password">Password</label>
+            <div class="input-wrapper">
+              <i class="fas fa-lock"></i>
+              <input
+                type="password"
+                id="signup-password"
+                placeholder="Create a password"
+                required
+              />
+              <button type="button" class="toggle-password">
+                <i class="fas fa-eye"></i>
+              </button>
+            </div>
+          </div>
+          <button type="submit" class="btn btn-primary btn-block">
+            <span>Create Account</span>
+            <i class="fas fa-user-plus"></i>
+          </button>
+        </form>
+      </div>
+    </div>
+
+    <!-- Main App Container -->
+    <div id="app-container" class="app-container hidden">
+      <!-- Top Header -->
+      <header class="app-header">
+        <div class="header-left">
+          <button class="menu-toggle" id="menu-toggle">
+            <i class="fas fa-bars"></i>
+          </button>
+          <div class="logo">
+            <i class="fas fa-wallet"></i>
+            <span>ExpenseTracker</span>
+          </div>
+        </div>
+        <div class="header-right">
+          <button class="icon-btn notification-btn" id="notification-btn">
+            <i class="fas fa-bell"></i>
+            <span class="notification-badge hidden" id="notification-badge"
+              >0</span
+            >
+          </button>
+          <div class="user-avatar" id="user-avatar">
+            <i class="fas fa-user"></i>
+          </div>
+        </div>
+      </header>
+
+      <!-- Notification Panel -->
+      <div class="notification-panel hidden" id="notification-panel">
+        <div class="notification-header">
+          <h3>Notifications</h3>
+          <button class="clear-notifications" id="clear-notifications">
+            Clear All
+          </button>
+        </div>
+        <div class="notification-list" id="notification-list">
+          <div class="notification-empty">
+            <i class="fas fa-bell-slash"></i>
+            <p>No notifications yet</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Main Content -->
+      <main class="main-content">
+        <!-- Dashboard View -->
+        <section id="dashboard-view" class="view active">
+          <div class="view-header">
+            <h1>Dashboard</h1>
+            <button class="btn btn-primary" id="add-expense-btn">
+              <i class="fas fa-plus"></i>
+              <span>Add Expense</span>
+            </button>
+          </div>
+
+          <!-- Summary Cards -->
+          <div class="summary-cards">
+            <div class="summary-card">
+              <div class="card-icon" style="background: var(--primary-color)">
+                <i class="fas fa-wallet"></i>
+              </div>
+              <div class="card-content">
+                <span class="card-label">Total This Month</span>
+                <span class="card-value" id="total-expenses">$0.00</span>
+              </div>
+            </div>
+            <div class="summary-card">
+              <div class="card-icon" style="background: var(--secondary-color)">
+                <i class="fas fa-chart-line"></i>
+              </div>
+              <div class="card-content">
+                <span class="card-label">Daily Average</span>
+                <span class="card-value" id="daily-average">$0.00</span>
+              </div>
+            </div>
+            <div class="summary-card">
+              <div class="card-icon" style="background: var(--accent-color)">
+                <i class="fas fa-receipt"></i>
+              </div>
+              <div class="card-content">
+                <span class="card-label">Total Transactions</span>
+                <span class="card-value" id="total-transactions">0</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Search and Filter -->
+          <div class="search-filter-bar">
+            <div class="search-box">
+              <i class="fas fa-search"></i>
+              <input
+                type="text"
+                id="search-input"
+                placeholder="Search expenses..."
+              />
+            </div>
+            <div class="filter-group">
+              <select id="category-filter" class="filter-select">
+                <option value="">All Categories</option>
+                <option value="food">🍔 Food</option>
+                <option value="transport">🚗 Transport</option>
+                <option value="shopping">🛍️ Shopping</option>
+                <option value="bills">📄 Bills</option>
+                <option value="entertainment">🎬 Entertainment</option>
+                <option value="health">💊 Health</option>
+                <option value="education">📚 Education</option>
+                <option value="other">📦 Other</option>
+              </select>
+              <input type="date" id="date-filter" class="filter-date" />
+            </div>
+          </div>
+
+          <!-- Expense List -->
+          <div class="expense-list" id="expense-list">
+            <div class="expense-empty">
+              <i class="fas fa-receipt"></i>
+              <h3>No expenses yet</h3>
+              <p>Add your first expense to get started</p>
+            </div>
+          </div>
+        </section>
+
+        <!-- Analytics View -->
+        <section id="analytics-view" class="view">
+          <div class="view-header">
+            <h1>Analytics</h1>
+          </div>
+
+          <div class="analytics-grid">
+            <div class="analytics-card">
+              <h3>Expenses by Category</h3>
+              <div class="chart-container">
+                <canvas id="category-chart"></canvas>
+              </div>
+            </div>
+            <div class="analytics-card">
+              <h3>Monthly Comparison</h3>
+              <div class="chart-container">
+                <canvas id="monthly-chart"></canvas>
+              </div>
+            </div>
+            <div class="analytics-card analytics-stats">
+              <h3>Statistics</h3>
+              <div class="stat-item">
+                <span class="stat-label">Highest Category</span>
+                <span class="stat-value" id="highest-category">-</span>
+              </div>
+              <div class="stat-item">
+                <span class="stat-label">Lowest Category</span>
+                <span class="stat-value" id="lowest-category">-</span>
+              </div>
+              <div class="stat-item">
+                <span class="stat-label">Average per Transaction</span>
+                <span class="stat-value" id="avg-transaction">$0.00</span>
+              </div>
+              <div class="stat-item">
+                <span class="stat-label">This Month vs Last</span>
+                <span class="stat-value" id="month-comparison">-</span>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- Settings View -->
+        <section id="settings-view" class="view">
+          <div class="view-header">
+            <h1>Settings</h1>
+          </div>
+
+          <div class="settings-section">
+            <h3>Appearance</h3>
+            <div class="settings-item">
+              <div class="settings-info">
+                <i class="fas fa-moon"></i>
+                <div>
+                  <span class="settings-label">Dark Mode</span>
+                  <span class="settings-desc"
+                    >Switch between light and dark theme</span
+                  >
+                </div>
+              </div>
+              <label class="toggle-switch">
+                <input type="checkbox" id="dark-mode-toggle" />
+                <span class="toggle-slider"></span>
+              </label>
+            </div>
+          </div>
+
+          <div class="settings-section">
+            <h3>Notifications</h3>
+            <div class="settings-item">
+              <div class="settings-info">
+                <i class="fas fa-bell"></i>
+                <div>
+                  <span class="settings-label">Push Notifications</span>
+                  <span class="settings-desc"
+                    >Receive alerts for important updates</span
+                  >
+                </div>
+              </div>
+              <label class="toggle-switch">
+                <input type="checkbox" id="notifications-toggle" />
+                <span class="toggle-slider"></span>
+              </label>
+            </div>
+            <div class="settings-item">
+              <div class="settings-info">
+                <i class="fas fa-exclamation-triangle"></i>
+                <div>
+                  <span class="settings-label">Large Expense Alert</span>
+                  <span class="settings-desc"
+                    >Notify when expense exceeds $100</span
+                  >
+                </div>
+              </div>
+              <label class="toggle-switch">
+                <input type="checkbox" id="large-expense-alert" checked />
+                <span class="toggle-slider"></span>
+              </label>
+            </div>
+          </div>
+
+          <div class="settings-section">
+            <h3>Data Management</h3>
+            <div class="settings-item">
+              <div class="settings-info">
+                <i class="fas fa-download"></i>
+                <div>
+                  <span class="settings-label">Export Data</span>
+                  <span class="settings-desc"
+                    >Download all expenses as JSON</span
+                  >
+                </div>
+              </div>
+              <button class="btn btn-secondary" id="export-data">
+                <i class="fas fa-download"></i>
+                Export
+              </button>
+            </div>
+            <div class="settings-item">
+              <div class="settings-info">
+                <i class="fas fa-upload"></i>
+                <div>
+                  <span class="settings-label">Import Data</span>
+                  <span class="settings-desc">Restore from JSON backup</span>
+                </div>
+              </div>
+              <button class="btn btn-secondary" id="import-data">
+                <i class="fas fa-upload"></i>
+                Import
+              </button>
+              <input type="file" id="import-file" accept=".json" hidden />
+            </div>
+          </div>
+
+          <div class="settings-section">
+            <h3>Account</h3>
+            <div class="settings-item">
+              <div class="settings-info">
+                <i class="fas fa-sign-out-alt"></i>
+                <div>
+                  <span class="settings-label">Logout</span>
+                  <span class="settings-desc">Sign out of your account</span>
+                </div>
+              </div>
+              <button class="btn btn-danger" id="logout-btn">
+                <i class="fas fa-sign-out-alt"></i>
+                Logout
+              </button>
+            </div>
+            <div class="settings-item">
+              <div class="settings-info">
+                <i class="fas fa-trash-alt"></i>
+                <div>
+                  <span class="settings-label">Delete Account</span>
+                  <span class="settings-desc">Permanently delete all data</span>
+                </div>
+              </div>
+              <button class="btn btn-danger" id="delete-account-btn">
+                <i class="fas fa-trash"></i>
+                Delete
+              </button>
+            </div>
+          </div>
+        </section>
+      </main>
+
+      <!-- Bottom Navigation -->
+      <nav class="bottom-nav">
+        <button class="nav-item active" data-view="dashboard">
+          <i class="fas fa-home"></i>
+          <span>Home</span>
+        </button>
+        <button class="nav-item" data-view="analytics">
+          <i class="fas fa-chart-pie"></i>
+          <span>Analytics</span>
+        </button>
+        <button class="nav-item" data-view="settings">
+          <i class="fas fa-cog"></i>
+          <span>Settings</span>
+        </button>
+      </nav>
+
+      <!-- Add/Edit Expense Modal -->
+      <div class="modal-overlay hidden" id="expense-modal">
+        <div class="modal">
+          <div class="modal-header">
+            <h2 id="modal-title">Add Expense</h2>
+            <button class="modal-close" id="modal-close">
+              <i class="fas fa-times"></i>
+            </button>
+          </div>
+          <form id="expense-form">
+            <input type="hidden" id="expense-id" />
+            <div class="form-group">
+              <label for="expense-title">Title</label>
+              <div class="input-wrapper">
+                <i class="fas fa-tag"></i>
+                <input
+                  type="text"
+                  id="expense-title"
+                  placeholder="Expense title"
+                  required
+                />
+              </div>
+            </div>
+            <div class="form-group">
+              <label for="expense-amount">Amount</label>
+              <div class="input-wrapper">
+                <i class="fas fa-dollar-sign"></i>
+                <input
+                  type="number"
+                  id="expense-amount"
+                  placeholder="0.00"
+                  step="0.01"
+                  min="0"
+                  required
+                />
+              </div>
+            </div>
+            <div class="form-group">
+              <label for="expense-category">Category</label>
+              <div class="input-wrapper">
+                <i class="fas fa-folder"></i>
+                <select id="expense-category" required>
+                  <option value="">Select category</option>
+                  <option value="food">🍔 Food</option>
+                  <option value="transport">🚗 Transport</option>
+                  <option value="shopping">🛍️ Shopping</option>
+                  <option value="bills">📄 Bills</option>
+                  <option value="entertainment">🎬 Entertainment</option>
+                  <option value="health">💊 Health</option>
+                  <option value="education">📚 Education</option>
+                  <option value="other">📦 Other</option>
+                </select>
+              </div>
+            </div>
+            <div class="form-group">
+              <label for="expense-date">Date</label>
+              <div class="input-wrapper">
+                <i class="fas fa-calendar"></i>
+                <input type="date" id="expense-date" required />
+              </div>
+            </div>
+            <div class="form-group">
+              <label for="expense-notes">Notes (Optional)</label>
+              <div class="input-wrapper">
+                <i class="fas fa-sticky-note"></i>
+                <textarea
+                  id="expense-notes"
+                  placeholder="Add notes..."
+                  rows="3"
+                ></textarea>
+              </div>
+            </div>
+            <div class="modal-actions">
+              <button type="button" class="btn btn-secondary" id="modal-cancel">
+                Cancel
+              </button>
+              <button type="submit" class="btn btn-primary" id="modal-submit">
+                <span>Save</span>
+                <i class="fas fa-check"></i>
+              </button>
+            </div>
+          </form>
+        </div>
+      </div>
+
+      <!-- Delete Confirmation Modal -->
+      <div class="modal-overlay hidden" id="delete-modal">
+        <div class="modal modal-sm">
+          <div class="modal-header">
+            <h2>Delete Expense</h2>
+            <button class="modal-close" id="delete-modal-close">
+              <i class="fas fa-times"></i>
+            </button>
+          </div>
+          <div class="modal-body">
+            <p>
+              Are you sure you want to delete this expense? This action cannot
+              be undone.
+            </p>
+          </div>
+          <div class="modal-actions">
+            <button class="btn btn-secondary" id="delete-cancel">Cancel</button>
+            <button class="btn btn-danger" id="delete-confirm">
+              <span>Delete</span>
+              <i class="fas fa-trash"></i>
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Install PWA Prompt -->
+      <div class="install-prompt hidden" id="install-prompt">
+        <div class="install-content">
+          <i class="fas fa-download"></i>
+          <div>
+            <span class="install-title">Install App</span>
+            <span class="install-desc"
+              >Add to home screen for better experience</span
+            >
+          </div>
+        </div>
+        <div class="install-actions">
+          <button class="btn btn-sm btn-secondary" id="dismiss-install">
+            Later
+          </button>
+          <button class="btn btn-sm btn-primary" id="confirm-install">
+            Install
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <script src="app.js"></script>
+  </body>
+</html>
